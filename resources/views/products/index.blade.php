@@ -4,6 +4,16 @@
 <div class="row justify-content-center mt-3">
     <div class="col-md-12">
 
+        {{-- Logout button at top right --}}
+        <div class="d-flex justify-content-end mb-3">
+            <form action="{{ route('logout') }}" method="POST" class="mb-0">
+                @csrf
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </form>
+        </div>
+
         @if (session('success'))
             <div class="alert alert-success" role="alert">
                 {{ session('success') }}
@@ -19,64 +29,59 @@
                 </a>
 
                 <table class="table table-striped table-bordered">
-                <thead>
-    <tr>
-        <th scope="col">S#</th>
-        <th scope="col">Code</th>
-        <th scope="col">Name</th>
-        <th scope="col">Quantity</th>
-        <th scope="col">Price</th>
-        <th scope="col">Image</th> <!-- Image column after Price -->
-        <th scope="col">Action</th>
-    </tr>
-</thead>
-<tbody>
-    @forelse ($products as $product)
-        <tr>
-            <th scope="row">{{ $loop->iteration }}</th>
+                    <thead>
+                        <tr>
+                            <th scope="col">S#</th>
+                            <th scope="col">Code</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Image</th> <!-- Image column after Price -->
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($products as $product)
+                            <tr>
+                                <th scope="row">{{ $loop->iteration }}</th>
+                                <td>{{ $product->code }}</td>
+                                <td>{{ $product->name }}</td>
+                                <td>{{ $product->quantity }}</td>
+                                <td>{{ $product->price }}</td>
+                                <td>
+                                    @if ($product->imageurl)
+                                        <img src="{{ asset('storage/' . $product->imageurl) }}" alt="Product Image" width="50" height="50" class="rounded">
+                                    @else
+                                        <span class="text-muted">No image</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
 
-            <td>{{ $product->code }}</td>
-            <td>{{ $product->name }}</td>
-            <td>{{ $product->quantity }}</td>
-            <td>{{ $product->price }}</td>
-
-            <!-- Image thumbnail after Price -->
-            <td>
-                @if ($product->imageurl)
-                    <img src="{{ asset('storage/' . $product->imageurl) }}" alt="Product Image" width="50" height="50" class="rounded">
-                @else
-                    <span class="text-muted">No image</span>
-                @endif
-            </td>
-
-            <td>
-                <form action="{{ route('products.destroy', $product->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-
-                    <a href="{{ route('products.show', $product->id) }}" class="btn btn-warning btn-sm">
-                        <i class="bi bi-eye"></i> Show
-                    </a>
-                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-pencil-square"></i> Edit
-                    </a>
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete this product?');">
-                        <i class="bi bi-trash"></i> Delete
-                    </button>
-                </form>
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="7">
-                <span class="text-danger">
-                    <strong>No Product Found!</strong>
-                </span>
-            </td>
-            </tr>
-                @endforelse
-            </tbody>
-
+                                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-eye"></i> Show
+                                        </a>
+                                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </a>
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete this product?');">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7">
+                                    <span class="text-danger">
+                                        <strong>No Product Found!</strong>
+                                    </span>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
                 </table>
 
                 {{ $products->links() }}
